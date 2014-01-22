@@ -108,9 +108,11 @@ compile_lib:
 
 pdftex-worker.js: compile_bc compile_lib compile_kpathsea
 	opt -strip-debug ${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex >pdftex.bc
-#	emcc -v --minify 0 -s FS_LOG=0 -s TOTAL_MEMORY=67108864 -O2 ${SOURCE_DIR}/build-pdftex/texk/web2c/lib/*.o ${SOURCE_DIR}/build-pdftex/texk/kpathsea/*.o pdftex.bc -s INVOKE_RUN=0 --pre-js pre.js --post-js post.js -o pdftex-worker.js
-	emcc -v -s FS_LOG=0 -s TOTAL_MEMORY=67108864 -O2 ${SOURCE_DIR}/build-pdftex/texk/web2c/lib/*.o ${SOURCE_DIR}/build-pdftex/texk/kpathsea/*.o pdftex.bc -s INVOKE_RUN=0 --pre-js pre.js --post-js post.js -o pdftex-worker.js
+	OBJFILES=$$(for i in `find ${SOURCE_DIR}/build-pdftex/texk/web2c/lib ${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
+	emcc -v -s FS_LOG=0 -s TOTAL_MEMORY=67108864 -O2 $$OBJFILES pdftex.bc -s INVOKE_RUN=0 --pre-js pre.js --post-js post.js -o pdftex-worker.js
+#	emcc -v --minify 0 -s FS_LOG=0 -s TOTAL_MEMORY=67108864 -O2 $$OBJFILES pdftex.bc -s INVOKE_RUN=0 --pre-js pre.js --post-js post.js -o pdftex-worker.js
 
+    
 clean:
 	rm -f pdftex-worker.js
 	rm -f latex.fmt

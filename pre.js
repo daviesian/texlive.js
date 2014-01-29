@@ -83,6 +83,7 @@ self['onmessage'] = function(ev) {
       res = FS_createLazyFilesFromList.apply(this, args);
     break;
 
+    case 'FS_chdir':
     case 'FS_readFile':
     case 'FS_createDataFile':
     case 'FS_createLazyFile':
@@ -106,6 +107,9 @@ self['onmessage'] = function(ev) {
     case 'set_TOTAL_MEMORY':
       Module.TOTAL_MEMORY = args[0];
       res = Module.TOTAL_MEMORY;
+    break;
+    case 'set_ENV':
+      ENV[args[0]] = args[1];
     break;
     case 'test':
     break;
